@@ -49,7 +49,6 @@ metadata:
   name: prometheus
   namespace: open5gs
 spec:
-  # ClusterIP: None (Headless) yaparak trafiği doğrudan endpoint IP'sine (Multus) yönlendiriyoruz
   clusterIP: None
   ports:
     - name: http
@@ -63,7 +62,7 @@ metadata:
   namespace: open5gs
 subsets:
   - addresses:
-      - ip: 10.10.10.22  # Deployment'ta atadığımız Multus IP'si
+      - ip: 10.10.10.22
     ports:
       - name: http
         port: 9090
