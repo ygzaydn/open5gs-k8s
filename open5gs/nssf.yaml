@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nssf
+  namespace: open5gs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nssf
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: '[
+          { "name": "sbi-network", "ips": ["10.10.10.16/24"] }
+        ]'
+      labels:
+        app: nssf
+    spec:
+      containers:
+      - name: nssf
+        image: gradiant/open5gs:2.7.6
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            sed -i 's/dev: eth0/dev: net1/g' /opt/open5gs/etc/open5gs/nssf.yaml
+            sed -i 's/addr: 127.0.0.14/addr: 0.0.0.0/g' /opt/open5gs/etc/open5gs/nssf.yaml
+              #sed -i 's|127.0.0.10:7777|nrf:7777|g' /opt/open5gs/etc/open5gs/nssf.yaml
+              #sed -i 's|nrf:7777|10.10.10.10:7777|g' /opt/open5gs/etc/open5gs/nssf.yaml
+            /opt/open5gs/bin/open5gs-nssfd -c /opt/open5gs/etc/open5gs/nssf.yaml
+        ports:
+        - containerPort: 7777
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nssf
+  namespace: open5gs
+spec:
+  clusterIP: None
+  ports:
+    - name: sbi
+      protocol: TCP
+      port: 7777
+      targetPort: 7777
+    - name: metrics
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: nssf
+  namespace: open5gs
+subsets:
+  - addresses:
+      - ip: 10.10.10.16
+    ports:
+      - name: sbi
+        port: 7777
+        protocol: TCP
+      - name: metrics
+        port: 9090
+        protocol: TCP
