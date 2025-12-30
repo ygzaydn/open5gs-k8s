@@ -1,3 +1,6 @@
+A simple Open5GS K8s deployment with Prometheus+Grafana. Goal of the deployment is to get familiar with 5G flows. 
+
+As gNB+UE side, UERANSIM project can be used.
 For debug purposes, I have assigned a dedicated IP for each NF. List as follows:
 
 - NRF: 10.10.10.10
@@ -15,4 +18,3 @@ For debug purposes, I have assigned a dedicated IP for each NF. List as follows:
 - PROMETHEUS: 10.10.10.22 (http://10.10.10.22:9090)
 - GRAFANA: 10.10.10.23 (http://10.10.10.23:3000 admin/admin)
 
-Goal of the deployment is to get familiar with 5G flows. 
